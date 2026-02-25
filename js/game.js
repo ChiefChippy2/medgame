@@ -570,19 +570,6 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
 
     function getCookie(name) {
-        // Proposition: rewrite to be more readable?
-        // let cookies = document.cookie.split(';');
-        // for (const cookie of cookies) {
-        //   const [name, content] = cookie.split('=');
-        //   // Trimming shouldn't be necessary?
-        //   if (name.trim() === name.trim()) return content;
-        // }
-        // return null;
-        // OR: (newer method, async!)
-        // return browser.cookies.get({
-        //   name
-        // });
-
         let nameEQ = name + "=";
         let ca = document.cookie.split(';');
         for (let i = 0; i < ca.length; i++) {
