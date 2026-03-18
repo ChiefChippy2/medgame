@@ -761,11 +761,8 @@ onDomReady(async () => {
         // Treatment score
         if (correctTreatments.length > 0 && !hasFatalError) {
             const correctSelectedCount = selectedTreatments.filter(t => correctTreatments.includes(t)).length;
-            const incorrectSelectedCount = selectedTreatments.filter(t => !correctTreatments.includes(t)).length;
-
-            // Award points for correct treatments, penalize for incorrect ones
-            // Max: if selected number exceeds correct 
-            const treatmentPointsPerCorrect = treatmentWeight / Math.max(correctTreatments.length, selectedTreatments.length);
+            // Award points for correct treatments
+            const treatmentPointsPerCorrect = treatmentWeight / correctTreatments.length;
             percentageScore += correctSelectedCount * treatmentPointsPerCorrect;
         }
         // If fatal error: treatment portion stays at 0
@@ -1075,11 +1072,18 @@ onDomReady(async () => {
 
     navItems.forEach(item => {
         item.addEventListener('click', () => {
+            // If already active, ignore
+            if (item.classList.contains('active')) return;
+
             playSound('click');
             
             // Remove active class from all items
             navItems.forEach(nav => nav.classList.remove('active'));
             // Add active class to clicked item
+
+            const section = item.getAttribute('data-target');
+            setTimeout(() => location.assign(`#${section}`), 0);
+
             item.classList.add('active');
 
             // Get current active section
@@ -1097,6 +1101,16 @@ onDomReady(async () => {
             }
         });
     });
+
+    const mockClick = (dt) => document.querySelector(`.nav-item[data-target=${dt}]`)?.dispatchEvent?.(new MouseEvent('click'))
+
+    if (location.hash) {
+      mockClick(location.hash.slice(1))
+    }
+
+    window.addEventListener("hashchange", () => {
+      mockClick(location.hash.slice(1))
+    })
 
     // Validation is now handled solely by validate-traitement.
 

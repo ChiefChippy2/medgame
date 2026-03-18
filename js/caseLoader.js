@@ -49,20 +49,16 @@ const caseLoaderCache = {
     }
 };
 
-function lazyLoadCase(file) {
+async function lazyLoadCase(file) {
     const cacheKey = `case_${file}`;
     const cached = caseLoaderCache.get(cacheKey) || caseLoaderCache.getFromLocalStorage(cacheKey);
     if (cached) return Promise.resolve(cached);
 
-    return fetch(`data/${file}`)
-        .then(res => {
-            if (!res.ok) throw new Error(`Fichier ${file} introuvable`);
-            return res.json();
-        })
-        .then(data => {
-            caseLoaderCache.set(cacheKey, data);
-            return data;
-        });
+    const res = await fetch(`data/${file}`);
+    if (!res.ok) throw new Error(`Fichier ${file} introuvable`);
+    const data = await res.json();
+    caseLoaderCache.set(cacheKey, data);
+    return data;
 }
 
 async function loadCasesMetadata() {
@@ -149,7 +145,7 @@ async function loadCasesData() {
         // Fallback local: multiple cases (with cache)
         const selectedCaseFilesLocal = JSON.parse(localStorage.getItem('selectedCaseFiles'));
         if (selectedCaseFilesLocal && Array.isArray(selectedCaseFilesLocal) && selectedCaseFilesLocal.length > 0) {
-            const results = await Promise.all(selectedCaseFilesLocal.map(lazyLoadCase));
+            const results = await Promise.all(selectedCaseFilesLocal.map(name => lazyLoadCase(`${name}.json`)));
             localStorage.removeItem('selectedCaseFiles');
             return results;
         }
@@ -157,7 +153,7 @@ async function loadCasesData() {
         // Single case (with cache)
         const selectedCaseFile = localStorage.getItem('selectedCaseFile');
         if (selectedCaseFile) {
-            const caseData = await lazyLoadCase(selectedCaseFile);
+            const caseData = await lazyLoadCase(`${selectedCaseFile}.json`);
             localStorage.removeItem('selectedCaseFile');
             return [caseData];
         }

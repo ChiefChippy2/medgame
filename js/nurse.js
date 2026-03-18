@@ -36,7 +36,7 @@ const NurseIntro = (() => {
         }
 
         const html = `
-        <div id="nurse-overlay" class="nurse-overlay" aria-hidden="true">
+        <div id="nurse-overlay" onclick="location.assign('#section-anamnese')" class="nurse-overlay" aria-hidden="true">
             <div class="nurse-container">
                 <div class="npc-wrapper">
                     <!-- Shadow -->

@@ -163,9 +163,19 @@ window.isAdmin = async function () {
     return data.role === 'admin';
 }
 
+window.requestAnonymousIdentity = () => {
+  localStorage.setItem('anonToken', '1');  
+}
+
+window.removeAnonymousIdentity = () => {
+  localStorage.removeItem('anonToken');
+}
+
 // Vérifie si l'utilisateur est connecté. Sinon, redirige vers login.html.
 // À inclure au début des scripts sensibles (game.js, editor.js, themes.js)
 window.requireAuth = async function (redirectUrl = 'login.html', requireAdmin = false) {
+    const remainAnon = localStorage.getItem('anonToken') === '1';
+    if (remainAnon) return null;
     if (typeof supabase === 'undefined') {
         console.warn("Supabase not initialized, skipping auth check.");
         return null;
